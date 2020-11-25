@@ -2,19 +2,10 @@
 
 这是我的一个[oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)插件。
 
-CentOS请预先安装一下软件: 
+### 安装
 
 ```bash
-sudo yum install -y \
-    redhat-lsb-core \
-    ntp \
-    zip \
-    unzip \
-    tar \
-    curl \
-    wget \
-    git \
-    net-tools
+git clone git@github.com:yingzhuo/mira.git $ZSH_CUSTOM/plugins/mira
 ```
 
 ### LICENSE
