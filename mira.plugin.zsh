@@ -1,16 +1,16 @@
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Description
 # -----------
 #
 # 添加一些常用的功能和命令别名
 #
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Authors
 # -------
 #
 # * 应卓 <github.com/yingzhuo>
 #
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 alias type='type -a'
 
@@ -39,6 +39,9 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 
+alias sysctl='sudo sysctl'
+alias systemctl='sudo systemctl'
+
 alias q='exit'
 
 if [[ $EUID -eq -0 ]]; then
@@ -47,7 +50,7 @@ else
     alias root='su -'
 fi
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 # Editor
 export EDITOR='vim'
@@ -74,7 +77,7 @@ export HISTCONTROL=ignoreboth
 # 其他
 export PATH=.:$PATH
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 function __os() {
   lsb_release -d | awk '{print $2}'
@@ -101,11 +104,26 @@ function __shutdown() {
 }
 
 function __clean_centos() {
-  sudo \yum clean packages
+  sudo \yum clean packages &> /dev/null
 }
 
 function __clean_ubuntu() {
+  sudo \apt-get autoremove -y &> /dev/null
+}
+
+function __deep_clean_centos() {
+  sudo \yum clean all &> /dev/null
+  sudo \rm -rf /var/cache/yum &> /dev/null
+  sudo \rm -rf /var/cache/dnf &> /dev/null
+  sudo \rm -rf /var/log/* &> /dev/null
+  sudo \rm -rf /tmp/* &> /dev/null
+}
+
+function __deep_clean_ubuntu() {
   sudo \apt-get autoremove -y
+  sudo \rm -rf /var/cache/apt/* &> /dev/null
+  sudo \rm -rf /var/log/* &> /dev/null
+  sudo \rm -rf /tmp/* &> /dev/null
 }
 
 function __update_ntp() {
@@ -116,21 +134,24 @@ function __update_ntp() {
 case $(__os) {
   "CentOS")
     # ---
+    alias sys.ntp=__update_ntp
     alias sys.reboot=__reboot
     alias sys.shutdown=__shutdown
     alias sys.update=__update_centos
     alias sys.clean=__clean_centos
-    alias sys.ntp=__update_ntp
+    alias sys.deep-clean=__deep_clean_centos
     # ---
     alias yum='sudo yum'
     alias dnf='sudo dnf'
     ;;
+
   "Ubuntu")
+    alias sys.ntp=__update_ntp
     alias sys.reboot=__reboot
     alias sys.shutdown=__shutdown
     alias sys.update=__update_ubuntu
     alias sys.clean=__clean_ubuntu
-    alias sys.ntp=__update_ntp
+    alias sys.deep-clean=__deep_clean_ubuntu
     # ---
     alias apt-get='sudo apt-get'
     alias apt='sudo apt'
