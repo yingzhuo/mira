@@ -113,17 +113,19 @@ function __clean_ubuntu() {
 
 function __deep_clean_centos() {
   sudo \yum clean all &> /dev/null
-  sudo \rm -rf /var/cache/yum &> /dev/null
-  sudo \rm -rf /var/cache/dnf &> /dev/null
-  sudo \rm -rf /var/log/* &> /dev/null
-  sudo \rm -rf /tmp/* &> /dev/null
+  sudo \rm -rf /var/cache/yum &> /dev/null || true
+  sudo \rm -rf /var/cache/dnf &> /dev/null || true
+  sudo \rm -rf /var/log/* &> /dev/null || true
+  sudo \rm -rf /tmp/* &> /dev/null || true
+  sudo history -c &> /dev/null && history -c &> /dev/null &> /dev/null
 }
 
 function __deep_clean_ubuntu() {
   sudo \apt-get autoremove -y
-  sudo \rm -rf /var/cache/apt/* &> /dev/null
-  sudo \rm -rf /var/log/* &> /dev/null
-  sudo \rm -rf /tmp/* &> /dev/null
+  sudo \rm -rf /var/cache/apt/* &> /dev/null || true
+  sudo \rm -rf /var/log/* &> /dev/null || true
+  sudo \rm -rf /tmp/* &> /dev/null || true
+  sudo history -c &> /dev/null && history -c &> /dev/null &> /dev/null
 }
 
 function __update_ntp() {
