@@ -41,6 +41,8 @@ alias rm='rm -i'
 
 alias sysctl='sudo sysctl'
 alias systemctl='sudo systemctl'
+alias chmod='sudo chmod'
+alias chown='sudo chown'
 
 alias q='exit'
 
@@ -111,21 +113,36 @@ function __clean_ubuntu() {
   sudo \apt-get autoremove -y &> /dev/null
 }
 
+function __empty_dir() {
+  sudo find $1 -mindepth 1 -maxdepth 1 -type f -exec rm -rv {} + \
+    -mindepth 1 -maxdepth 1 -o -type d -exec rm -rv {} + &> /dev/null
+}
+
+function __deep_clean_common() {
+  for homedir in $(getent passwd | cut -d: -f6 | sort | uniq)
+  do
+    if [[ -d $homedir ]]
+    then
+      [[ -e "$homedir/.cache" ]] && sudo rm -rf $homedir/.cache
+      [[ -e "$homedir/.viminfo" ]] && sudo rm -rf $homedir/.viminfo
+      sudo find $homedir -type f -name '.zcompdump*' -delete
+    fi
+  done
+
+  $(__empty_dir /var/log)
+  $(__empty_dir /tmp)
+  sudo history -c &> /dev/null && history -c &> /dev/null || true
+}
+
 function __deep_clean_centos() {
   sudo \yum clean all &> /dev/null
-  sudo \rm -rf /var/cache/yum &> /dev/null || true
-  sudo \rm -rf /var/cache/dnf &> /dev/null || true
-  sudo \rm -rf /var/log/* &> /dev/null || true
-  sudo \rm -rf /tmp/* &> /dev/null || true
-  sudo history -c &> /dev/null && history -c &> /dev/null &> /dev/null
+  $(__deep_clean_common)
 }
 
 function __deep_clean_ubuntu() {
   sudo \apt-get autoremove -y
-  sudo \rm -rf /var/cache/apt/* &> /dev/null || true
-  sudo \rm -rf /var/log/* &> /dev/null || true
-  sudo \rm -rf /tmp/* &> /dev/null || true
-  sudo history -c &> /dev/null && history -c &> /dev/null &> /dev/null
+  $(__empty_dir /var/cache/apt)
+  $(__deep_clean_common)
 }
 
 function __update_ntp() {
