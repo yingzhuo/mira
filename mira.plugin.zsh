@@ -86,11 +86,13 @@ function __os() {
 }
 
 function __update_centos() {
+  sudo hwclock --hctosys
   sudo \yum -y update
   sudo \yum clean packages
 }
 
 function __update_ubuntu() {
+  sudo hwclock --hctosys
   sudo \apt-get update -y
   sudo \apt-get upgrade -y
   sudo \apt-get dist-upgrade -y
@@ -125,7 +127,9 @@ function __deep_clean_common() {
     then
       [[ -e "$homedir/.cache" ]] && sudo rm -rf $homedir/.cache
       [[ -e "$homedir/.viminfo" ]] && sudo rm -rf $homedir/.viminfo
+      [[ -e "$homedir/.beeline" ]] && sudo rm -rf $homedir/.beeline
       sudo find $homedir -type f -name '.zcompdump*' -delete
+      sudo find $homedir -maxdepth 1 -type f -name '*history' -delete
     fi
   done
 
