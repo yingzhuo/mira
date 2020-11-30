@@ -116,8 +116,9 @@ function __clean_ubuntu() {
 }
 
 function __empty_dir() {
-  sudo find $1 -mindepth 1 -maxdepth 1 -type f -exec rm -rv {} + \
-    -mindepth 1 -maxdepth 1 -o -type d -exec rm -rv {} + &> /dev/null
+  sudo find $1 \
+    -mindepth 1 -maxdepth 1 -type f -exec rm -rv {} + -o \
+    -mindepth 1 -maxdepth 1 -type d -exec rm -rv {} + &> /dev/null
 }
 
 function __deep_clean_common() {
@@ -128,6 +129,8 @@ function __deep_clean_common() {
       [[ -e "$homedir/.cache" ]] && sudo rm -rf $homedir/.cache
       [[ -e "$homedir/.viminfo" ]] && sudo rm -rf $homedir/.viminfo
       [[ -e "$homedir/.beeline" ]] && sudo rm -rf $homedir/.beeline
+      [[ -e "$homedir/.selected_editor" ]] && sudo rm -rf $homedir/.selected_editor
+      [[ -e "$homedir/.sudo_as_admin_successful" ]] && sudo rm -rf $homedir/.sudo_as_admin_successful
       sudo find $homedir -type f -name '.zcompdump*' -delete
       sudo find $homedir -maxdepth 1 -type f -name '*history' -delete
     fi
@@ -144,7 +147,7 @@ function __deep_clean_centos() {
 }
 
 function __deep_clean_ubuntu() {
-  sudo \apt-get autoremove -y
+  sudo \apt-get autoremove -y &> /dev/null
   $(__empty_dir /var/cache/apt)
   $(__deep_clean_common)
 }
